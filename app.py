@@ -323,6 +323,125 @@ Grundprinzip aus Konstruktion und Bewertung bleibt aber dasselbe.
 """
     )
 
+with st.expander("📐 Mathematische Formulierung"):
+    st.markdown(
+        r"""
+Formal ist das Terminvergabeproblem ein **Parallel-Maschinen-Scheduling-Problem mit
+Freigabeterminen**, in der Drei-Feld-Notation von Graham et al. als $P_m \mid r_i \mid \sum C_i$
+bezeichnet. Gegeben:
+
+- eine Menge von $n$ **LKW** (Aufträge) $J = \{1, \ldots, n\}$
+- eine Menge von $m$ **Toren** (Maschinen) $D = \{1, \ldots, m\}$
+- eine **Wunschzeit** (Freigabetermin) $r_i \geq 0$ je LKW $i$ (`preferred_times` in
+  `tas_data.py`)
+- eine **Bearbeitungsdauer** $p_i \geq 0$ je LKW $i$ (`service_times`)
+
+Gesucht ist eine Tor-Zuordnung $\delta: J \to D$ und Startzeiten $s_i \geq r_i$, sodass sich
+zwei LKW am selben Tor nie überlappen, und die Gesamtwartezeit minimal ist:
+"""
+    )
+    st.latex(r"\min \; \sum_{i=1}^{n} (s_i - r_i) \quad \text{u. d. N.} \quad s_i \geq r_i \;\; \forall i")
+    st.latex(
+        r"s_i + p_i \leq s_j \;\; \lor \;\; s_j + p_j \leq s_i \qquad \forall i \neq j "
+        r"\text{ mit } \delta(i) = \delta(j)"
+    )
+    st.markdown(
+        r"""
+**Äquivalenz zur Gesamtdurchlaufzeit:** Mit Fertigstellung $C_i = s_i + p_i$ gilt
+$\sum_i (s_i - r_i) = \sum_i C_i - \sum_i p_i - \sum_i r_i$ - die letzten beiden Summen sind
+Konstanten (unabhängig von $\delta$ und $s$). Gesamtwartezeit und Gesamtdurchlaufzeit
+$\sum C_i$ zu minimieren ist deshalb dasselbe Problem, nur um eine Konstante verschoben -
+daher die $\sum C_i$-Notation in der Literatur, obwohl die App die betrieblich
+aussagekräftigere Wartezeit zeigt.
+
+Als binäres Programm mit Zuordnungsvariablen $x_{id} \in \{0,1\}$ (= 1, wenn LKW $i$ Tor $d$
+zugewiesen wird) und Reihenfolgevariablen $y_{ij} \in \{0,1\}$ (= 1, wenn $i$ vor $j$
+bearbeitet wird) - die gebräuchliche Form für Scheduling-MILPs mit Disjunktionen, linearisiert
+über eine hinreichend große Konstante $M$ (z. B. der Betriebszeitraum):
+"""
+    )
+    st.latex(r"\min \; \sum_{i=1}^{n} (s_i - r_i)")
+    st.latex(
+        r"\text{u. d. N.} \quad \sum_{d=1}^{m} x_{id} = 1 \;\; \forall i, "
+        r"\qquad s_i \geq r_i \;\; \forall i"
+    )
+    st.latex(
+        r"s_j \geq s_i + p_i - M(1{-}y_{ij}) - M(2{-}x_{id}{-}x_{jd})"
+        r"\qquad \forall i \neq j,\; \forall d"
+    )
+    st.latex(
+        r"s_i \geq s_j + p_j - M\,y_{ij} - M(2{-}x_{id}{-}x_{jd})"
+        r"\qquad \forall i \neq j,\; \forall d"
+    )
+    st.markdown(
+        r"""
+**Warum NP-schwer?** Ohne Freigabetermine löst die SPT-Regel das Ein-Maschinen-Problem
+$1 \| \sum C_i$ in Polynomialzeit exakt optimal (Smith 1956) - kürzeste Aufgaben zuerst
+minimiert nachweislich die Summe der Fertigstellungszeiten, und dieses Ergebnis lässt sich auf
+$m$ identische parallele Maschinen ohne Freigabetermine erweitern. Sobald jeder Auftrag aber
+erst ab seinem eigenen $r_i$ verfügbar ist, kann SPT eine bereits verfügbare lange Aufgabe
+zugunsten einer erst später verfügbaren kurzen zurückstellen (siehe README, Abschnitt "Ein
+Konstruktionsfehler..." für ein handkonstruiertes Beispiel genau dieses Effekts) - Lenstra,
+Rinnooy Kan & Brucker (1977) zeigten, dass bereits das Ein-Maschinen-Problem mit
+Freigabeterminen $1 \mid r_i \mid \sum C_i$ NP-schwer ist. Da eine einzelne Maschine der
+Spezialfall $m=1$ des hier betrachteten Problems ist, ist $P_m \mid r_i \mid \sum C_i$
+für $m \geq 1$ ebenfalls NP-schwer.
+
+**FCFS und ERD als gemeinsame Konstruktionsregel:** Beide verarbeiten die LKW in einer festen
+Reihenfolge (FCFS: Anmeldereihenfolge, ERD: aufsteigend nach $r_i$) und platzieren jeden LKW
+$i$ am Tor mit dem frühestmöglichen freien Slot, gegeben die Menge $B_d$ der auf Tor $d$ bereits
+gebuchten Intervalle:
+"""
+    )
+    st.latex(
+        r"s_d(i \mid B_d) = \min \{\, t \geq r_i : [t,\, t{+}p_i) "
+        r"\text{ überschneidet kein Intervall in } B_d \,\}"
+    )
+    st.latex(r"(\delta^*(i), s^*(i)) = \arg\min_{d \,\in\, D} \; s_d(i \mid B_d)")
+    st.markdown(
+        r"""
+$s_d(i \mid B_d)$ entspricht `_earliest_start()`, die äußere Minimierung über alle Tore
+`_construct()` in `tas_heuristics.py` - `fcfs_schedule()` und `erd_schedule()` unterscheiden
+sich einzig in der Reihenfolge, in der die LKW dieser Regel übergeben werden.
+
+**SPT (ereignisgesteuert):** keine statische Liste, sondern eine Simulation. Sei $f_d$ der
+Zeitpunkt, zu dem Tor $d$ als Nächstes frei wird, und $R$ die Menge der noch nicht
+eingeplanten LKW:
+"""
+    )
+    st.latex(r"t = \min_{d \,\in\, D} f_d, \qquad d^* = \arg\min_{d \,\in\, D} f_d")
+    st.latex(
+        r"A(t) = \{\, i \in R : r_i \leq t \,\} \quad (\text{falls } A(t) = \emptyset: "
+        r"\; t \leftarrow \min_{i \in R} r_i,\; A(t) \text{ neu bilden})"
+    )
+    st.latex(r"i^* = \arg\min_{i \,\in\, A(t)} p_i")
+    st.markdown(
+        r"""
+Danach $\delta(i^*) \leftarrow d^*$, $s(i^*) \leftarrow t$, $f_{d^*} \leftarrow t + p_{i^*}$,
+$R \leftarrow R \setminus \{i^*\}$ - direkt umgesetzt in `spt_schedule()`: `dock_free_at`
+entspricht $f_d$, `remaining` entspricht $R$, `available` entspricht $A(t)$, `chosen`
+entspricht $i^*$.
+
+**Warum lokale Verbesserung beweisbar nichts bringt:** $s_d(i \mid B_d)$ ist monoton in
+$B_d$ - je mehr Intervalle bereits gebucht sind, desto später oder gleich früh kann $i$ starten,
+nie früher: $B \subseteq B' \Rightarrow s_d(i \mid B) \leq s_d(i \mid B')$. Jeder LKW wird bei
+seiner Einplanung bereits gegen die zu diesem Zeitpunkt vollständige Buchungsmenge optimal
+platziert; die Buchungsmenge zum Ende der Konstruktion ist immer eine Obermenge davon. Eine
+nachträgliche Neuplatzierung eines einzelnen LKW gegen die fertige Konfiguration prüft ihn
+folglich gegen ein $B_d' \supseteq B_d$ - kann nach obiger Monotonie nie einen früheren Slot
+finden. Genau das bestätigten die 0 von 300 Testinstanzen im README, hier aber als Beweis statt
+Beobachtung.
+
+**Bezug zum Code:** `evaluate_schedule()` in `tas_evaluation.py` berechnet exakt
+$\sum_i (s_i - r_i)$ von oben (`total_waiting_min`). Keines der drei Verfahren löst das Problem
+exakt: schon die reine Tor-Zuordnung hat $m^n$ Möglichkeiten, ganz ohne die zusätzliche
+Reihenfolge je Tor mitzuzählen - bei $n=40$ LKW und $m=3$ Toren (Szenario "Volle Auslastung")
+bereits $3^{40} \approx 1.2 \times 10^{19}$, bei den in der Sidebar maximal einstellbaren
+$n=80$ LKW und $m=10$ Toren $10^{80}$ - vollständige Enumeration ist von vornherein
+ausgeschlossen.
+"""
+    )
+
 st.markdown("---")
 
 st.markdown("#### War diese Demo hilfreich für Sie?")

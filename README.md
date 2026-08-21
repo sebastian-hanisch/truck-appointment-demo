@@ -69,6 +69,12 @@ Modular wie bei den anderen Demos:
   komplett anders als die räumlichen Grundrisse der bisherigen Demos.
 - **Permalink, Feedback-Mechanismus, PDF-Export:** wie bei den anderen Demos, inklusive
   `SETTING_SPECS`-Muster und NaN/Infinity-Schutz von Anfang an.
+- **Mathematische Formulierung als eigener Expander:** formale Definition als $P_m \mid r_i
+  \mid \sum C_i$ (Parallel-Maschinen-Scheduling mit Freigabeterminen, disjunktive und
+  binäre MILP-Form), NP-Schwere-Beleg über Lenstra/Rinnooy Kan/Brucker (1977), formale
+  Herleitung aller drei Konstruktionsregeln sowie ein Monotonie-Beweis dafür, warum lokale
+  Verbesserung hier wirkungslos bleibt - mit direktem Bezug auf die entsprechenden Funktionen
+  im Code.
 
 ## Ein Konstruktionsfehler gefunden: statische SPT-Sortierung ignoriert Freigabetermine
 
