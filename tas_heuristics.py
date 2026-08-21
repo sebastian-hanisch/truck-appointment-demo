@@ -93,6 +93,8 @@ def fcfs_schedule(preferred_times, service_times, n_docks):
     n = len(preferred_times)
     if n == 0:
         return np.array([], dtype=int), np.array([])
+    if n_docks == 0:
+        raise ValueError("n_docks muss mindestens 1 sein, wenn LKW eingeplant werden sollen")
     return _construct(range(n), preferred_times, service_times, n_docks)
 
 
@@ -103,6 +105,8 @@ def erd_schedule(preferred_times, service_times, n_docks):
     n = len(preferred_times)
     if n == 0:
         return np.array([], dtype=int), np.array([])
+    if n_docks == 0:
+        raise ValueError("n_docks muss mindestens 1 sein, wenn LKW eingeplant werden sollen")
     order = sorted(range(n), key=lambda i: preferred_times[i])
     return _construct(order, preferred_times, service_times, n_docks)
 
@@ -123,6 +127,8 @@ def spt_schedule(preferred_times, service_times, n_docks):
     n = len(preferred_times)
     if n == 0:
         return np.array([], dtype=int), np.array([])
+    if n_docks == 0:
+        raise ValueError("n_docks muss mindestens 1 sein, wenn LKW eingeplant werden sollen")
 
     remaining = set(range(n))
     dock_free_at = [0.0] * n_docks

@@ -5,10 +5,13 @@ LKW-für-LKW-Zeitplan.
 
 import time
 
+import streamlit as st
+
 from tas_evaluation import evaluate_schedule
 from tas_visualization import format_clock
 
 
+@st.cache_data(show_spinner=False)
 def generate_schedule_plan_pdf(label, preferred_times, service_times, dock_of_truck, start_of_truck):
     from fpdf import FPDF
     from fpdf.enums import XPos, YPos

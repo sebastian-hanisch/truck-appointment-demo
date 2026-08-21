@@ -39,13 +39,14 @@ def bounds(state_key):
     return spec.lo, spec.hi
 
 
-def apply_preset(n_trucks_val, n_docks_val, op_min_val, peak_conc_val, n_peaks_val, seed_val):
-    st.session_state["n_trucks_slider"] = n_trucks_val
-    st.session_state["n_docks_slider"] = n_docks_val
-    st.session_state["operating_minutes_slider"] = op_min_val
-    st.session_state["peak_concentration_slider"] = peak_conc_val
-    st.session_state["n_peaks_slider"] = n_peaks_val
-    st.session_state["seed_input"] = seed_val
+def apply_preset(values):
+    """values: dict mapping a SETTING_SPECS state_key (z. B. "n_trucks_slider") auf den
+    zu setzenden Wert - benannt statt positionsbasiert, damit eine Umsortierung von
+    SETTING_SPECS keinen Preset stillschweigend an den falschen Regler koppelt."""
+    for state_key in values:
+        if state_key not in SETTING_SPECS:
+            raise KeyError(f"Unbekannter state_key in Preset: {state_key!r}")
+        st.session_state[state_key] = values[state_key]
     st.session_state["force_regen"] = True
 
 

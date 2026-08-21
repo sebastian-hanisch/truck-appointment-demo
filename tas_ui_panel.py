@@ -5,15 +5,12 @@ Kennzahlen, Gantt-Chart, PDF-Export.
 
 import streamlit as st
 
-from tas_evaluation import evaluate_schedule
 from tas_pdf_export import generate_schedule_plan_pdf
 from tas_visualization import build_gantt_figure
 
 
 def render_schedule_panel(prefix, label, preferred_times, service_times, dock_of_truck, start_of_truck,
-                           n_docks, operating_minutes, peak_times):
-    stats = evaluate_schedule(preferred_times, service_times, dock_of_truck, start_of_truck)
-
+                           n_docks, operating_minutes, peak_times, stats):
     m1, m2, m3 = st.columns(3)
     m1.metric("Ø Wartezeit", f"{stats['avg_waiting_min']:.1f} min")
     m2.metric("Gesamtwartezeit", f"{stats['total_waiting_min']:.0f} min")

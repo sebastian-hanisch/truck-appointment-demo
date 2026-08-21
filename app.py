@@ -55,19 +55,31 @@ preset_col1, preset_col2, preset_col3 = st.columns(3)
 with preset_col1:
     st.button(
         "😌 Ruhiger Tag", width="stretch",
-        on_click=apply_preset, args=(16, 4, 720.0, 0.2, 1, 5),
+        on_click=apply_preset,
+        args=({
+            "n_trucks_slider": 16, "n_docks_slider": 4, "operating_minutes_slider": 720.0,
+            "peak_concentration_slider": 0.2, "n_peaks_slider": 1, "seed_input": 5,
+        },),
         help="Wenige LKW, Wunschzeiten eher gleichmäßig über den Tag verteilt.",
     )
 with preset_col2:
     st.button(
         "⏰ Schichtwechsel-Stoßzeit", width="stretch",
-        on_click=apply_preset, args=(30, 4, 720.0, 0.85, 1, 11),
+        on_click=apply_preset,
+        args=({
+            "n_trucks_slider": 30, "n_docks_slider": 4, "operating_minutes_slider": 720.0,
+            "peak_concentration_slider": 0.85, "n_peaks_slider": 1, "seed_input": 11,
+        },),
         help="Die meisten LKW wollen zur selben Stoßzeit ankommen (z. B. Schichtwechsel).",
     )
 with preset_col3:
     st.button(
         "🔥 Volle Auslastung", width="stretch",
-        on_click=apply_preset, args=(40, 3, 720.0, 0.6, 2, 9),
+        on_click=apply_preset,
+        args=({
+            "n_trucks_slider": 40, "n_docks_slider": 3, "operating_minutes_slider": 720.0,
+            "peak_concentration_slider": 0.6, "n_peaks_slider": 2, "seed_input": 9,
+        },),
         help="Viele LKW auf wenige Tore - die Tore sind nahe an ihrer Kapazitätsgrenze.",
     )
 
@@ -108,8 +120,9 @@ with st.sidebar:
         help="Wie viele unterschiedliche Stoßzeiten es gibt, auf die sich Wunschzeiten "
         "konzentrieren können.",
     )
+    seed_lo, seed_hi = bounds("seed_input")
     seed = st.number_input(
-        "Zufalls-Seed", step=1, key="seed_input",
+        "Zufalls-Seed", min_value=int(seed_lo), max_value=int(seed_hi), step=1, key="seed_input",
         help="Steuert die Zufallsgenerierung von Wunschzeiten und Bearbeitungsdauern. Gleicher "
         "Seed + gleiche Einstellungen ergeben immer exakt dasselbe Szenario - reproduzierbar "
         "und über die Adresszeile teilbar.",
@@ -181,9 +194,9 @@ stats_spt = evaluate_schedule(preferred_times, service_times, dock_spt, start_sp
 # Wartezeit gewinnt. Baseline fuer den Vergleich ist immer FCFS (nicht "die
 # jeweils andere Methode") - eindeutig definiert, auch mit drei Kandidaten.
 candidates = [
-    {"key": "fcfs", "label": "FCFS", "dock": dock_fcfs, "start": start_fcfs, **stats_fcfs},
-    {"key": "erd", "label": "ERD", "dock": dock_erd, "start": start_erd, **stats_erd},
-    {"key": "spt", "label": "SPT", "dock": dock_spt, "start": start_spt, **stats_spt},
+    {"key": "fcfs", "label": "FCFS", "dock_of_truck": dock_fcfs, "start_of_truck": start_fcfs, **stats_fcfs},
+    {"key": "erd", "label": "ERD", "dock_of_truck": dock_erd, "start_of_truck": start_erd, **stats_erd},
+    {"key": "spt", "label": "SPT", "dock_of_truck": dock_spt, "start_of_truck": start_spt, **stats_spt},
 ]
 best = min(candidates, key=lambda c: c["avg_waiting_min"])
 baseline = next(c for c in candidates if c["key"] == "fcfs")
@@ -210,7 +223,7 @@ if reduction_pct > 1.0:
     )
 
 fig_best = build_gantt_figure(
-    preferred_times, service_times, best["dock"], best["start"], n_docks, operating_minutes, peak_times,
+    preferred_times, service_times, best["dock_of_truck"], best["start_of_truck"], n_docks, operating_minutes, peak_times,
 )
 st.plotly_chart(fig_best, width="stretch", key="primary_best_plot")
 st.caption(
@@ -218,7 +231,7 @@ st.caption(
     "Strich markiert die bevorzugte Ankunftszeit, gepunktete Linien markieren Stoßzeiten."
 )
 
-pdf_bytes_best = generate_schedule_plan_pdf("Optimierter Terminplan", preferred_times, service_times, best["dock"], best["start"])
+pdf_bytes_best = generate_schedule_plan_pdf("Optimierter Terminplan", preferred_times, service_times, best["dock_of_truck"], best["start_of_truck"])
 st.download_button(
     "📄 Terminplan als PDF herunterladen", data=pdf_bytes_best,
     file_name="terminplan_optimiert.pdf", mime="application/pdf", key="primary_pdf_download",
@@ -233,11 +246,11 @@ with st.expander("🔧 Wie wir das erreichen – vollständiger Methodenvergleic
 
     with tabs[0]:
         st.caption("LKW in Anmeldereihenfolge, jeweils frühestmögliches freies Tor - repräsentiert eine ungeplante Terminvergabe ohne Priorisierung.")
-        summary_fcfs = render_schedule_panel("fcfs", "FCFS", preferred_times, service_times, dock_fcfs, start_fcfs, n_docks, operating_minutes, peak_times)
+        summary_fcfs = render_schedule_panel("fcfs", "FCFS", preferred_times, service_times, dock_fcfs, start_fcfs, n_docks, operating_minutes, peak_times, stats_fcfs)
 
     with tabs[1]:
         st.caption("LKW nach aufsteigender Wunschzeit sortiert (Earliest Release Date first), sonst derselbe Platzierungsmechanismus wie FCFS.")
-        summary_erd = render_schedule_panel("erd", "ERD", preferred_times, service_times, dock_erd, start_erd, n_docks, operating_minutes, peak_times)
+        summary_erd = render_schedule_panel("erd", "ERD", preferred_times, service_times, dock_erd, start_erd, n_docks, operating_minutes, peak_times, stats_erd)
 
     with tabs[2]:
         st.caption(
@@ -246,7 +259,7 @@ with st.expander("🔧 Wie wir das erreichen – vollständiger Methodenvergleic
             "für die Details, inklusive einer beim Benchmarking gefundenen und korrigierten "
             "Schwäche einer ersten, einfacheren Version)."
         )
-        summary_spt = render_schedule_panel("spt", "SPT", preferred_times, service_times, dock_spt, start_spt, n_docks, operating_minutes, peak_times)
+        summary_spt = render_schedule_panel("spt", "SPT", preferred_times, service_times, dock_spt, start_spt, n_docks, operating_minutes, peak_times, stats_spt)
 
     with tabs[3]:
         st.markdown("### Methodenvergleich")
@@ -448,17 +461,23 @@ st.markdown("#### War diese Demo hilfreich für Sie?")
 if st.session_state.get("feedback_given"):
     vote_text = "👍 positiv" if st.session_state["feedback_given"] == "up" else "👎 negativ"
     st.success(f"Danke für Ihr Feedback ({vote_text})! 🙏")
+elif st.session_state.get("feedback_failed"):
+    st.warning("Ihr Feedback konnte gerade nicht gespeichert werden. Bitte versuchen Sie es später erneut.")
 else:
     fb_col1, fb_col2 = st.columns(2)
     with fb_col1:
         if st.button("👍 Ja", key="feedback_up_btn", width="stretch"):
-            log_feedback("up")
-            st.session_state["feedback_given"] = "up"
+            if log_feedback("up"):
+                st.session_state["feedback_given"] = "up"
+            else:
+                st.session_state["feedback_failed"] = True
             st.rerun()
     with fb_col2:
         if st.button("👎 Nein", key="feedback_down_btn", width="stretch"):
-            log_feedback("down")
-            st.session_state["feedback_given"] = "down"
+            if log_feedback("down"):
+                st.session_state["feedback_given"] = "down"
+            else:
+                st.session_state["feedback_failed"] = True
             st.rerun()
 
 st.caption(

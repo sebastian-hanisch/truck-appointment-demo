@@ -9,6 +9,8 @@ den Spediteuren ab (Standgeld-Sätze variieren stark).
 
 import numpy as np
 
+from tas_constants import EPS
+
 
 def evaluate_schedule(preferred_times, service_times, dock_of_truck, start_of_truck):
     """Gibt ein Dict zurück: total_waiting_min, avg_waiting_min,
@@ -29,6 +31,6 @@ def evaluate_schedule(preferred_times, service_times, dock_of_truck, start_of_tr
         "total_waiting_min": float(waiting.sum()),
         "avg_waiting_min": float(waiting.mean()),
         "max_waiting_min": float(waiting.max()),
-        "on_time_share": float((waiting <= 1e-6).sum()) / n * 100.0,
+        "on_time_share": float((waiting <= EPS).sum()) / n * 100.0,
         "makespan_min": float(completion.max()),
     }

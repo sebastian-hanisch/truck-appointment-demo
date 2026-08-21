@@ -8,7 +8,7 @@ import numpy as np
 
 
 def generate_appointments(n_trucks, n_docks, seed, operating_minutes=720.0,
-                           service_time_range=(20.0, 90.0), n_peaks=2, peak_concentration=0.5):
+                           n_peaks=2, peak_concentration=0.5):
     """Erzeugt n_trucks bevorzugte Ankunftszeiten (Minuten ab Betriebsbeginn)
     und Bearbeitungsdauern (Minuten).
 
@@ -31,7 +31,6 @@ def generate_appointments(n_trucks, n_docks, seed, operating_minutes=720.0,
     preferred_times = np.where(is_peak, peak_sampled_times, uniform_times)
     preferred_times = np.clip(preferred_times, 0, operating_minutes).round(0)
 
-    lo, hi = service_time_range
-    service_times = rng.uniform(lo, hi, size=n_trucks).round(0)
+    service_times = rng.uniform(20.0, 90.0, size=n_trucks).round(0)
 
     return preferred_times, service_times, peak_times
