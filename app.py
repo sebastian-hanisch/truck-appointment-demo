@@ -27,7 +27,6 @@ import streamlit as st
 
 from tas_data import generate_appointments
 from tas_evaluation import evaluate_schedule
-from tas_feedback import log_feedback
 from tas_heuristics import erd_schedule, fcfs_schedule, spt_schedule
 from tas_pdf_export import generate_schedule_plan_pdf
 from tas_presets import apply_preset, bounds, init_session_state_defaults, load_permalink_settings, randomize_seed, sync_query_params
@@ -457,31 +456,8 @@ ausgeschlossen.
 
 st.markdown("---")
 
-st.markdown("#### War diese Demo hilfreich für Sie?")
-if st.session_state.get("feedback_given"):
-    vote_text = "👍 positiv" if st.session_state["feedback_given"] == "up" else "👎 negativ"
-    st.success(f"Danke für Ihr Feedback ({vote_text})! 🙏")
-elif st.session_state.get("feedback_failed"):
-    st.warning("Ihr Feedback konnte gerade nicht gespeichert werden. Bitte versuchen Sie es später erneut.")
-else:
-    fb_col1, fb_col2 = st.columns(2)
-    with fb_col1:
-        if st.button("👍 Ja", key="feedback_up_btn", width="stretch"):
-            if log_feedback("up"):
-                st.session_state["feedback_given"] = "up"
-            else:
-                st.session_state["feedback_failed"] = True
-            st.rerun()
-    with fb_col2:
-        if st.button("👎 Nein", key="feedback_down_btn", width="stretch"):
-            if log_feedback("down"):
-                st.session_state["feedback_given"] = "down"
-            else:
-                st.session_state["feedback_failed"] = True
-            st.rerun()
-
 st.caption(
-    "Diese Demo ist Teil des Portfolios von Sebastian Hanisch – Operations Research "
-    "und Machine Learning. Interesse an einer maßgeschneiderten Lösung für Ihr "
-    "Unternehmen? [Kontakt aufnehmen](#)"
+    "Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – "
+    "Operations Research und Machine Learning. Interesse an einer maßgeschneiderten Lösung für "
+    "Ihr Unternehmen? [Kontakt aufnehmen](https://sebastianhanisch.net/kontakt.html)"
 )
