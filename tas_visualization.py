@@ -78,4 +78,9 @@ def build_gantt_figure(preferred_times, service_times, dock_of_truck, start_of_t
         height=max(260, 70 * n_docks + 120), margin=dict(l=10, r=10, t=30, b=10),
         barmode="overlay",
     )
+    # fixedrange auf beiden Achsen: verhindert Pinch-Zoom/Drag-Pan im Chart,
+    # damit auf Touch-Geräten stattdessen die Seite normal gescrollt wird
+    # (Hover-Tooltips bleiben davon unberührt).
+    fig.update_xaxes(fixedrange=True)
+    fig.update_yaxes(fixedrange=True)
     return fig
