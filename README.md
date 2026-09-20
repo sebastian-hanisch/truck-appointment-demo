@@ -1,6 +1,6 @@
 # Truck-Appointment-Scheduling – Streamlit-Demo
 
-**[→ Demo live ausprobieren](https://sebastianhanisch-truckappointment-demo.streamlit.app/)**
+**[→ Demo live ausprobieren](https://sebastianhanisch-truck-appointment-demo.streamlit.app/)**
 
 Interaktive Demo zur Terminvergabe für LKW-Anlieferungen an einer Umschlaghalle. Fünfte Demo im
 Portfolio für die Website "Sebastian Hanisch – Operations Research und Machine Learning", nach
