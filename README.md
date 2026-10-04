@@ -135,7 +135,7 @@ Seed-Zuordnung schwanken die Werte um einige Minuten, die Größenordnung blieb 
 | Vergleich | Ergebnis |
 |---|---|
 | ERD vs. FCFS | ERD im Schnitt ~21-24 min kürzere Ø-Wartezeit, aber in ~11-15 von 120 Instanzen schlechter |
-| SPT vs. ERD | SPT im Schnitt ~45-49 min kürzere Ø-Wartezeit, in keiner der 120 Instanzen schlechter |
+| SPT vs. ERD | SPT im Schnitt ~45-49 min kürzere Ø-Wartezeit, in keiner der 120 Instanzen schlechter (in einer unabhängigen Nachmessung über 1200 Instanzen derselben Mischung in 2 Fällen minimal schlechter: 3 bzw. 6 min Gesamtwartezeit) |
 | SPT vs. FCFS | SPT im Schnitt ~69-71 min kürzere Ø-Wartezeit, in keiner der 120 Instanzen schlechter |
 
 (Frühere Angaben von ~12 / ~15 / ~27 min stammten aus einer nicht reproduzierbaren Einzelmessung und wurden durch diese Nachmessung ersetzt.
@@ -176,7 +176,7 @@ pip install -r requirements-dev.txt
 pytest tests/ -v
 ```
 
-60 Tests, laufen automatisch bei jedem Push/PR über GitHub Actions.
+64 Tests, laufen automatisch bei jedem Push/PR über GitHub Actions.
 
 ## 3. Kostenlos online stellen (Streamlit Community Cloud)
 
