@@ -112,7 +112,7 @@ with st.sidebar:
         "Konzentration auf Stoßzeiten", *bounds("peak_concentration_slider"), step=0.05, key="peak_concentration_slider",
         help="0 = Wunschzeiten gleichmäßig über den Tag verteilt, 1 = die meisten LKW wollen zu "
         "einer von wenigen Stoßzeiten ankommen (z. B. Schichtwechsel). Je höher der Wert, desto "
-        "größer ist in der Regel der Vorteil von ERD/SPT gegenüber FCFS.",
+        "größer ist in der Regel der Vorteil von SPT (bei nicht überlasteten Toren auch von ERD) gegenüber FCFS in Minuten (prozentual sinkt er dagegen).",
     )
     n_peaks = st.slider(
         "Anzahl Stoßzeiten", *bounds("n_peaks_slider"), key="n_peaks_slider",
@@ -458,6 +458,6 @@ st.markdown("---")
 
 st.caption(
     "Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – "
-    "Operations Research und Machine Learning. Interesse an einer maßgeschneiderten Lösung für "
-    "Ihr Unternehmen? [Kontakt aufnehmen](https://sebastianhanisch.net/kontakt.html)"
+    "Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). "
+    "Mehr zum Thema: [Hof- und Yard-Management optimieren](https://sebastianhanisch.net/yard-management-optimierung.html)."
 )

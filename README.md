@@ -42,7 +42,6 @@ Modular wie bei den anderen Demos:
 | `tas_evaluation.py` | Bewertung: Wartezeit, Pünktlichkeit, Makespan |
 | `tas_visualization.py` | Gantt-Chart (Plotly) |
 | `tas_pdf_export.py` | PDF-Terminplan-Erzeugung |
-| `tas_feedback.py` | Feedback-Logging |
 | `tas_ui_panel.py` | Wiederverwendbares UI-Panel je Heuristik |
 | `tas_presets.py` | Beispielszenarien, Permalink-Logik (`SETTING_SPECS`) |
 
@@ -69,7 +68,7 @@ Modular wie bei den anderen Demos:
 - **Gantt-Chart-Visualisierung:** Tore auf der Y-Achse, Uhrzeit auf der X-Achse, Balkenfarbe
   nach Wartezeit, Wunschzeit als Strich markiert, Stoßzeiten als gepunktete Linien - visuell
   komplett anders als die räumlichen Grundrisse der bisherigen Demos.
-- **Permalink, Feedback-Mechanismus, PDF-Export:** wie bei den anderen Demos, inklusive
+- **Permalink, PDF-Export:** wie bei den anderen Demos, inklusive
   `SETTING_SPECS`-Muster und NaN/Infinity-Schutz von Anfang an.
 - **Mathematische Formulierung als eigener Expander:** formale Definition als $P_m \mid r_i
   \mid \sum C_i$ (Parallel-Maschinen-Scheduling mit Freigabeterminen, disjunktive und
@@ -90,8 +89,8 @@ kurzer Auftrag S (Dauer 1, erst ab Minute 50 verfügbar). Die naive Sortierung p
 (kürzere Dauer, unabhängig von der Verfügbarkeit) - S bekommt Minute 50, L muss danach warten
 und startet erst bei Minute 51 (Gesamtwartezeit 51). Die korrigierte, ereignisgesteuerte Version
 lässt das Tor sofort mit L loslegen (L ist zu dem Zeitpunkt der einzige verfügbare Auftrag),
-S wartet dann bis Minute 100 auf das freie Tor, muss dort aber nur bis Minute 100 statt 101
-warten (Gesamtwartezeit 50) - ein Minute besser, und das Prinzip verallgemeinert sich.
+S wartet dann bis Minute 100 auf das freie Tor (Wartezeit 50, Gesamtwartezeit also 50
+statt 51) - eine Minute besser, und das Prinzip verallgemeinert sich.
 
 **Fix:** `spt_schedule()` in `tas_heuristics.py` simuliert den Betrieb jetzt ereignisgesteuert:
 sobald ein Tor frei wird, wird unter den zu diesem Zeitpunkt bereits verfügbaren, noch nicht
@@ -173,7 +172,7 @@ pip install -r requirements-dev.txt
 pytest tests/ -v
 ```
 
-62 Tests, laufen automatisch bei jedem Push/PR über GitHub Actions.
+60 Tests, laufen automatisch bei jedem Push/PR über GitHub Actions.
 
 ## 3. Kostenlos online stellen (Streamlit Community Cloud)
 
@@ -191,4 +190,4 @@ pytest tests/ -v
 - Test an einem echten Mobilgerät.
 ---
 
-Teil des [Operations-Research-Demo-Portfolios](https://sebastianhanisch.net/demos.html) von [Sebastian Hanisch](https://sebastianhanisch.net) — Operations Research und Machine Learning. Interesse an einer maßgeschneiderten Lösung? [Kontakt aufnehmen](https://sebastianhanisch.net/kontakt.html).
+Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). Mehr zum Thema: [Hof- und Yard-Management optimieren](https://sebastianhanisch.net/yard-management-optimierung.html).
