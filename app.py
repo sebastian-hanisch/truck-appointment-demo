@@ -49,6 +49,17 @@ Tor-Zuordnung der Schwester-Demo kommt hier zum ersten Mal eine echte Zeitdimens
 """
 )
 
+# erklaerseite:einfach:start (erzeugt von tools/set_demo_explainer.py (Website-Repo) aus tools/content/explainers/lkw-terminvergabe-erklaert.json, nicht von Hand ändern)
+with st.expander("💬 In einfachen Worten"):
+    st.markdown(
+        """
+Jeder LKW will zu einer Wunschzeit an einem Tor entladen werden, und jedes Tor bedient immer nur einen LKW. Wer später dran ist als gewünscht, hat gewartet. Gesucht ist ein Plan, bei dem alle zusammen möglichst wenig warten. Die Demo vergleicht drei einfache Regeln: die **Anmeldereihenfolge** (wer sich zuerst meldet, wird zuerst eingeplant), die **Wunschzeit zuerst** und die **kürzeste Entladung zuerst** unter den schon wartenden LKW. Sie zeigt den Plan als Balkenbild je Tor, die Farbe der Balken zeigt die Wartezeit. Alles ist ein vereinfachtes Rechenbild mit erfundenen Daten: Wunschzeiten und Dauern sind vorher bekannt, nichts fällt aus. Der Mittelwert der Wartezeit sagt nicht, wen es trifft. Darum lohnt auch der Blick auf den Anteil der pünktlichen LKW.
+
+[Ausführlich und verständlich erklärt, mit Fachteil](https://sebastianhanisch.net/lkw-terminvergabe-erklaert.html)
+        """
+    )
+# erklaerseite:einfach:end
+
 st.caption("🎯 Schnellstart – ein Beispielszenario laden:")
 preset_col1, preset_col2, preset_col3 = st.columns(3)
 with preset_col1:
@@ -336,6 +347,25 @@ Grundprinzip aus Konstruktion und Bewertung bleibt aber dasselbe.
     )
 
 with st.expander("📐 Mathematische Formulierung"):
+    # erklaerseite:lesehilfe:start (erzeugt von tools/set_demo_explainer.py (Website-Repo) aus tools/content/explainers/lkw-terminvergabe-erklaert.json, nicht von Hand ändern)
+    st.markdown(
+        r"""
+**Lesehilfe.** Gegeben sind LKW mit Wunschzeit und Bearbeitungsdauer und eine Anzahl gleichartiger Tore. Gesucht ist für jeden LKW ein Tor und eine Startzeit nicht vor der Wunschzeit, ohne Überlappung am selben Tor, mit möglichst kleiner Gesamtwartezeit.
+
+| Symbol | Bedeutung |
+|---|---|
+| $n$, $m$ | Anzahl der LKW bzw. der Tore |
+| $r_i$ | Wunschzeit (Freigabetermin) des LKW $i$ in Minuten ab Betriebsbeginn |
+| $p_i$ | Bearbeitungsdauer des LKW $i$ in Minuten |
+| $s_i$, $\delta(i)$ | Startzeit bzw. Tor des LKW $i$ im Plan |
+| $B_d$ | Menge der auf Tor $d$ schon gebuchten Zeitintervalle |
+| $f_d$, $R$, $A(t)$ | Zeitpunkt, zu dem Tor $d$ frei wird; Menge der noch nicht eingeplanten LKW; Menge der zum Zeitpunkt $t$ verfügbaren LKW |
+| $x_{id}$, $y_{ij}$, $M$ | Tor-Zuordnung, Reihenfolge zweier LKW und große Konstante in der MILP-Form |
+
+[Schritt für Schritt erklärt, mit Herleitung und Literatur](https://sebastianhanisch.net/lkw-terminvergabe-erklaert.html#fachleute)
+        """
+    )
+    # erklaerseite:lesehilfe:end
     st.markdown(
         r"""
 Formal ist das Terminvergabeproblem ein **Parallel-Maschinen-Scheduling-Problem mit
